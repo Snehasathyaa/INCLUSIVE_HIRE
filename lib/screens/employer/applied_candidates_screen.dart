@@ -74,13 +74,19 @@ log("wi-------"+widget.jobId);
                       child: ListTile(
                         leading: const Icon(Icons.person, color: Colors.teal),
                         title: Text(candidate["name"] ?? "Unknown"),
-                        subtitle: Text(candidate["email"] ?? ""),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(candidate["phone"] ?? "No phone"),
+                            Text(candidate["email"] ?? ""),
+                          ],
+                        ),
                         trailing: IconButton(
                           icon: const Icon(Icons.description,
                               color: Colors.grey),
                           onPressed: () {
                             print("Open Resume: ${candidate["resume"]}");
-                            // TODO: Open resume file or URL
+                           
                           },
                         ),
                       ),
