@@ -85,7 +85,7 @@ class _AppliedCandidatesScreenState extends State<AppliedCandidatesScreen> {
                     trailing: IconButton(
                       icon: const Icon(Icons.description, color: Colors.grey),
                       onPressed: () {
-                        String path = fileUrl + candidate["resume"] ?? "";
+                        String path = fileUrl + candidate["resume"] ;
                         log("dasnfsnfjsn---------" + path);
                         Navigator.push(
                           context,
