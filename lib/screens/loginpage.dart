@@ -7,6 +7,7 @@ import 'package:hire_inclusive/screens/home_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'const.dart';
 import 'role_selection_screen.dart';
 
 class loginpage extends StatefulWidget {
@@ -41,12 +42,15 @@ class _OTPLoginScreenState extends State<loginpage> {
     setState(() => isLoading = true);
 
     try {
+
+
+      log("wwwwwwwwwwwwwwww");
       final response = await http.post(
-        Uri.parse("http://192.168.20.12:4000/api/users/send-otp"),
+        Uri.parse(baseUrl+"send-otp"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email}),
       );
-
+log("respppp-"+response.body);
       if (response.statusCode == 200) {
         setState(() {
           otpSent = true;
@@ -81,7 +85,7 @@ Future<void> verifyOtp() async {
 
   try {
     final response = await http.post(
-      Uri.parse("http://192.168.20.12:4000/api/users/verify-otp"),
+      Uri.parse(baseUrl+"verify-otp"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"email": email, "otp": otp}),
     );
@@ -110,7 +114,7 @@ Future<void> loginWithType(String email) async {
     final int type =widget.type;
 
     final response = await http.post(
-      Uri.parse("http://192.168.20.12:4000/api/users/login"),
+      Uri.parse(baseUrl+"login"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"email": email, "type": type}),
     );

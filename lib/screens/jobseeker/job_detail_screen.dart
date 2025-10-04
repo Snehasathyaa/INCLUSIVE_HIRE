@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../const.dart';
+
 class JobDetailsScreen extends StatefulWidget {
   final Map job;
 
@@ -36,7 +38,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       }
 
       final response = await http.post(
-        Uri.parse("http://192.168.20.12:4000/api/users/apply"), // backend API
+        Uri.parse(baseUrl+"apply"), // backend API
         headers: {"Content-Type": "application/json"},
         body: json.encode({
           "user_email": userEmail,

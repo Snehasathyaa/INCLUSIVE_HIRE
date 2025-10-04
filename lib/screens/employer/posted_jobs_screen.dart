@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../const.dart';
 import 'applied_candidates_screen.dart';
 
 class PostedJobsScreen extends StatefulWidget {
@@ -46,8 +47,8 @@ class _PostedJobsScreenState extends State<PostedJobsScreen> {
     setState(() => isLoading = true);
 
     try {
-      final uri = Uri.parse(
-        "http://192.168.20.12:4000/api/users/getjobs/$employerId",
+      final uri = Uri.parse(baseUrl+
+        "getjobs/$employerId",
       );
 
       final response = await http.get(uri);

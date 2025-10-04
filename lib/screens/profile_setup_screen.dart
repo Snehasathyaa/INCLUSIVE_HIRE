@@ -30,6 +30,12 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
   File? resumeFile;
 
+
+
+
+
+  
+
   Future<void> pickResume() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -76,6 +82,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           skills: skillsController.text,
           location: locationController.text,
           disability: disabilityType,
+          resumeFile:resumeFile!
         ),
       ),
     );
@@ -262,7 +269,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                       : resumeFile!.path.split('/').last,
                                   style: TextStyle(
                                     color: resumeFile == null
-                                        ? Colors.black
+                                        ? Colors.grey[800]
                                         : Colors.black,
                                     fontSize: 16,
                                   ),

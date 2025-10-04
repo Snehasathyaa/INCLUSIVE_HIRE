@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../const.dart';
 import '../role_selection_screen.dart';
 import 'posted_jobs_screen.dart';
 
@@ -48,8 +49,8 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
 
   /// Fetch employer details from backend
   Future<void> _fetchEmployerProfile(String emailParam) async {
-    final url = Uri.parse(
-        "http://192.168.20.12:4000/api/users/get/email/$emailParam");
+    final url = Uri.parse(baseUrl+
+        "get/email/$emailParam");
 
     print("Fetching employer profile from: $url");
 
@@ -102,7 +103,7 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
     }
 
     final response = await http.post(
-      Uri.parse("http://192.168.20.12:4000/api/users/createJob"),
+      Uri.parse(baseUrl+"createJob"),
       headers: {"Content-Type": "application/json"},
       body: json.encode({
         "employer_id": employerId,

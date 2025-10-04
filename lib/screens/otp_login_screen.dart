@@ -1,14 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hire_inclusive/screens/home_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'const.dart';
+
 
 class OTPLoginScreen extends StatefulWidget {
   final String name, email, phone, skills, location, disability;
-  const OTPLoginScreen({super.key, required this.name, required this.email, required this.phone, required this.skills, required this.location, required this.disability});
+   final File? resumeFile;
+  const OTPLoginScreen({super.key, required this.name, required this.email, required this.phone, required this.skills, required this.location, required this.disability,required this.resumeFile});
 
   @override
   _OTPLoginScreenState createState() => _OTPLoginScreenState();
@@ -44,7 +48,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse("http://192.168.20.12:4000/api/users/send-otp"),
+        Uri.parse(baseUrl+"send-otp"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email}),
       );
@@ -85,7 +89,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse("http://192.168.20.12:4000/api/users/verify-otp"),
+        Uri.parse(baseUrl+"verify-otp"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email, "otp": otp}),
       );
@@ -105,68 +109,73 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
     }
   }
   Future<void> sendtoservero() async {
-    
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString("name", widget.name);
-    await prefs.setString("email", widget.email);
-    await prefs.setString("disability", widget.disability);
-    await prefs.setString("skills", widget.skills);
-    await prefs.setString("location", widget.location);
-    await prefs.setString("phone", widget.phone);
-    await prefs.setString("isloged", "yes");
-    await prefs.setString("role", "user");
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString("name", widget.name);
+  await prefs.setString("email", widget.email);
+  await prefs.setString("disability", widget.disability);
+  await prefs.setString("skills", widget.skills);
+  await prefs.setString("location", widget.location);
+  await prefs.setString("phone", widget.phone);
+  await prefs.setString("isloged", "yes");
+  await prefs.setString("role", "user");
 
-    try {
-      var uri = Uri.parse("http://192.168.20.12:4000/api/users/registerprofile");
+  try {
+    var uri = Uri.parse(baseUrl+"registerprofile");
 
-      var body = {
-        'name': widget.name,
-        'email': widget.email,
-        'disability':  widget.disability,
-        'skills': widget.skills,
-        'location': widget.location,
-        'phone': widget.phone,
-      };
+    var request = http.MultipartRequest("POST", uri);
 
-      print("Sending body: $body"); // Debug
+    // Add fields
+    request.fields['name'] = widget.name;
+    request.fields['email'] = widget.email;
+    request.fields['disability'] = widget.disability;
+    request.fields['skills'] = widget.skills;
+    request.fields['location'] = widget.location;
+    request.fields['phone'] = widget.phone;
 
-      var response = await http.post(
-        uri,
-        headers: {'Content-Type': 'application/json'}, // Send as JSON
-        body: jsonEncode(body),
-      );
-
-      print("Response status: ${response.statusCode}");
-      print("Response body: ${response.body}");
-final resp=jsonDecode(response.body);
-      if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Profile saved successfully")),
-        );
-       Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(
-              // Pass email here
-            ),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              resp["message"] ?? "Unknown error",
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error saving profile: $e")),
+    // Add file (assuming widget.resumefile is a File object)
+    if (widget.resumeFile != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'resume', // <-- This should match backend field name
+          widget.resumeFile!.path,
+        ),
       );
     }
-  }
 
+    // Send request
+    var streamedResponse = await request.send();
+    var response = await http.Response.fromStream(streamedResponse);
+
+    print("Response status: ${response.statusCode}");
+    print("Response body: ${response.body}");
+
+    final resp = jsonDecode(response.body);
+
+    if (response.statusCode == 201) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Profile saved successfully")),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            resp["message"] ?? "Unknown error",
+          ),
+        ),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error saving profile: $e")),
+    );
+  }
+}
   /// Timer for resend OTP
   void startCountdown() {
     countdown = 60;

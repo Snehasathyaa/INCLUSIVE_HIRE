@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../const.dart';
 import 'job_detail_screen.dart';
 
 class AppliedJobsScreen extends StatefulWidget {
@@ -38,7 +39,7 @@ class _AppliedJobsScreenState extends State<AppliedJobsScreen> {
 
     try {
       final response = await http.get(
-        Uri.parse("http://192.168.20.12:4000/api/users/applied/$userEmail"),
+        Uri.parse(baseUrl+"applied/$userEmail"),
       );
 
       final data = json.decode(response.body);

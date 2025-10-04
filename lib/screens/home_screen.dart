@@ -4,6 +4,7 @@ import 'package:hire_inclusive/screens/role_selection_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import 'const.dart';
 import 'jobseeker/applied_jobs_screen.dart';
 import 'jobseeker/job_detail_screen.dart';
 import 'jobseeker/profile_edit_screen.dart';
@@ -16,11 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String userName = "";
-  String email = "";
-  String disabilityType = "";
-  String skills = "";
-  String location = "";
+
 
   final Color themeColor = Colors.teal[700]!;
 
@@ -29,58 +26,26 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadEmailAndFetchProfile();
+
     fetchJobs(); // load jobs when screen starts
   }
 
-  // Load email from SharedPreferences and fetch profile
-  Future<void> _loadEmailAndFetchProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    email = prefs.getString("email") ?? "";
-    userName = prefs.getString("name") ?? "User";
-
-    if (email.isNotEmpty) {
-      _fetchUserProfile(email);
-    } else {
-      print("No email found in SharedPreferences.");
-    }
-  }
-
-  // Fetch profile from backend
-  Future<void> _fetchUserProfile(String email) async {
-    final url = Uri.parse("http://192.168.20.12:4000/api/users/getProfileByEmail/$email");
-
-    try {
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-
-        setState(() {
-          userName = data["data"]["name"] ?? "";
-          this.email = data["data"]["email"] ?? "";
-          disabilityType = data["data"]["disability"] ?? "";
-          skills = data["data"]["skills"] ?? "";
-          location = data["data"]["location"] ?? "";
-        });
-      } else {
-        print("Failed to fetch user data: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Error fetching user data: $e");
-    }
-  }
-
+String username="Loading..",email="Loading..";
+ 
   // Fetch jobs from backend
   Future<void> fetchJobs() async {
     try {
-      final response = await http.get(Uri.parse("http://192.168.20.12:4000/api/users/getalljob"));
+       final prefs = await SharedPreferences.getInstance();
+
+      final response = await http.get(Uri.parse(baseUrl+"getalljob"));
 
       print("API Response: ${response.body}");
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
           jobs = data["data"];
+             email = prefs.getString("email") ?? "";
+    username = prefs.getString("name") ?? "User";
         });
       } else {
         print("Failed to fetch jobs: ${response.statusCode}");
@@ -105,12 +70,12 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             UserAccountsDrawerHeader(
               decoration: BoxDecoration(color: themeColor),
-              accountName: Text(userName),
+              accountName: Text(username),
               accountEmail: Text(email),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: const Color(0xFFF0F2F5),
                 child: Text(
-                  userName.isNotEmpty ? userName[0] : "U",
+                  username.isNotEmpty ? username[0] : "U",
                   style: TextStyle(fontSize: 24, color: themeColor),
                 ),
               ),
@@ -156,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "👋 $userName ",
+              "👋 $username ",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,

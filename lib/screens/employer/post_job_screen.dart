@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../const.dart';
+
 class PostJobScreen extends StatefulWidget {
   const PostJobScreen({super.key});
 
@@ -19,7 +21,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
   Future<void> _postJob() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final url = Uri.parse("http://192.168.20.12:4000/api/users/postjob");
+    final url = Uri.parse(baseUrl+"postjob");
 
     try {
       final response = await http.post(url, body: {

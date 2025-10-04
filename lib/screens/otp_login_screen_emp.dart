@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'const.dart';
 import 'employer/employer_home_screen.dart';
 
 class OTPLoginScreenEmp extends StatefulWidget {
@@ -44,7 +45,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreenEmp> {
 
     try {
       final response = await http.post(
-        Uri.parse("http://192.168.20.12:4000/api/users/send-otp"),
+        Uri.parse(baseUrl+"send-otp"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email}),
       );
@@ -85,7 +86,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreenEmp> {
 
     try {
       final response = await http.post(
-        Uri.parse("http://192.168.20.12:4000/api/users/verify-otp"),
+        Uri.parse(baseUrl+"verify-otp"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email, "otp": otp}),
       );
@@ -110,7 +111,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreenEmp> {
     
     try {
       final response = await http.post(
-        Uri.parse("http://192.168.20.12:4000/api/users/empregistration"),
+        Uri.parse(baseUrl+"empregistration"),
         headers: {
             "Content-Type": "application/json",  // 👈 JSON header
 },

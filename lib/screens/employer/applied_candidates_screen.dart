@@ -3,7 +3,10 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:hire_inclusive/screens/const.dart';
 import 'package:http/http.dart' as http;
+
+import '../pdf_viewer.dart';
 
 class AppliedCandidatesScreen extends StatefulWidget {
   final String jobId;
@@ -28,18 +31,14 @@ class _AppliedCandidatesScreenState extends State<AppliedCandidatesScreen> {
   Future<void> fetchApplicants() async {
     setState(() => isLoading = true);
 
-
-
-
-log("wi-------"+widget.jobId);
+    log("wi-------" + widget.jobId);
     try {
       final uri = Uri.parse(
-          "http://192.168.20.12:4000/api/users/getApplicants/${int.tryParse(widget.jobId)}");
+        baseUrl + "getApplicants/${int.tryParse(widget.jobId)}",
+      );
       final response = await http.get(uri);
 
-
-
-      log("respppppp=-------"+response.body);
+      log("respppppp=-------" + response.body);
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
@@ -47,7 +46,9 @@ log("wi-------"+widget.jobId);
           applicants = decoded["data"] ?? [];
         });
       } else {
-        print("Failed to fetch applicants. Status code: ${response.statusCode}");
+        print(
+          "Failed to fetch applicants. Status code: ${response.statusCode}",
+        );
       }
     } catch (e) {
       print("Error fetching applicants: $e");
@@ -63,36 +64,43 @@ log("wi-------"+widget.jobId);
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : applicants.isEmpty
-              ? const Center(child: Text("No candidates applied yet."))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: applicants.length,
-                  itemBuilder: (context, index) {
-                    final candidate = applicants[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ListTile(
-                        leading: const Icon(Icons.person, color: Colors.teal),
-                        title: Text(candidate["name"] ?? "Unknown"),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(candidate["phone"] ?? "No phone"),
-                            Text(candidate["email"] ?? ""),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.description,
-                              color: Colors.grey),
-                          onPressed: () {
-                            print("Open Resume: ${candidate["resume"]}");
-                           
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
+          ? const Center(child: Text("No candidates applied yet."))
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: applicants.length,
+              itemBuilder: (context, index) {
+                final candidate = applicants[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    leading: const Icon(Icons.person, color: Colors.teal),
+                    title: Text(candidate["name"] ?? "Unknown"),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(candidate["phone"] ?? "No phone"),
+                        Text(candidate["email"] ?? ""),
+                      ],
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.description, color: Colors.grey),
+                      onPressed: () {
+                        String path = fileUrl + candidate["resume"] ?? "";
+                        log("dasnfsnfjsn---------" + path);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PdfViewPage(path: path),
+                          ),
+                        );
+
+                        print("Open Resume: ${candidate["resume"]}");
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }
