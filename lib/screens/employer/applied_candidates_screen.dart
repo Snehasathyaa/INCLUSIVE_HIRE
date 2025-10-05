@@ -1,7 +1,5 @@
-// lib/screens/employer/applied_candidates_screen.dart
 
 import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:hire_inclusive/screens/const.dart';
 import 'package:http/http.dart' as http;
@@ -31,14 +29,12 @@ class _AppliedCandidatesScreenState extends State<AppliedCandidatesScreen> {
   Future<void> fetchApplicants() async {
     setState(() => isLoading = true);
 
-    log("wi-------" + widget.jobId);
     try {
       final uri = Uri.parse(
         baseUrl + "getApplicants/${int.tryParse(widget.jobId)}",
       );
       final response = await http.get(uri);
 
-      log("respppppp=-------" + response.body);
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
@@ -86,7 +82,6 @@ class _AppliedCandidatesScreenState extends State<AppliedCandidatesScreen> {
                       icon: const Icon(Icons.description, color: Colors.grey),
                       onPressed: () {
                         String path = fileUrl + candidate["resume"] ;
-                        log("dasnfsnfjsn---------" + path);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
