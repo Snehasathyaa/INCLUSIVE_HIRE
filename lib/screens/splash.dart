@@ -27,13 +27,15 @@ class _SplashScreenState extends State<SplashScreen>
       duration: Duration(seconds: 2),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.7,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _controller.forward();
 
@@ -42,6 +44,7 @@ class _SplashScreenState extends State<SplashScreen>
       checklogin();
     });
   }
+
   checklogin() async {
     final prefs = await SharedPreferences.getInstance();
     final isLogged = prefs.getString("isloged");
@@ -59,15 +62,14 @@ class _SplashScreenState extends State<SplashScreen>
           MaterialPageRoute(builder: (context) => EmployerHomeScreen()),
         );
       }
-    }else{
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => RoleSelectionScreen()),
+      );
+    }
+  }
 
-    
-     Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => RoleSelectionScreen()),
-        );
-  }
-  }
   @override
   void dispose() {
     _controller.dispose();
@@ -77,7 +79,6 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -94,12 +95,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  
-                  Image.asset(
-                    "assets/logoo.png",
-                    width: 200,
-                    height: 200,
-                  ),
+                  Image.asset("assets/logoo.png", width: 200, height: 200),
                   SizedBox(height: 20),
                   Text(
                     "Inclusive Hire",
@@ -113,10 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
                   SizedBox(height: 8),
                   Text(
                     "Connecting Talent with Opportunities",
-                    style: TextStyle(
-                      color: Colors.teal.shade400,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(color: Colors.teal.shade400, fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
                 ],
