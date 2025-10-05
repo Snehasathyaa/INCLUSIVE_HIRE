@@ -8,11 +8,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'const.dart';
 
-
 class OTPLoginScreen extends StatefulWidget {
   final String name, email, phone, skills, location, disability;
-   final File? resumeFile;
-  const OTPLoginScreen({super.key, required this.name, required this.email, required this.phone, required this.skills, required this.location, required this.disability,required this.resumeFile});
+  final File? resumeFile;
+  const OTPLoginScreen({
+    super.key,
+    required this.name,
+    required this.email,
+    required this.phone,
+    required this.skills,
+    required this.location,
+    required this.disability,
+    required this.resumeFile,
+  });
 
   @override
   _OTPLoginScreenState createState() => _OTPLoginScreenState();
@@ -32,7 +40,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
     sendOtp();
   }
 
-  /// ✅ API: Send OTP
+  ///  Send OTP
   Future<void> sendOtp() async {
     final email = widget.email.trim();
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -48,7 +56,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse(baseUrl+"send-otp"),
+        Uri.parse(baseUrl + "send-otp"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email}),
       );
@@ -59,29 +67,32 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
           isLoading = false;
           startCountdown();
         });
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("OTP sent to $email")));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("OTP sent to $email")));
       } else {
         setState(() => isLoading = false);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Failed to send OTP")));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Failed to send OTP")));
       }
     } catch (e) {
       setState(() => isLoading = false);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Error: $e")));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
     }
   }
 
-  /// ✅ API: Verify OTP
+  ///  Verify OTP
   Future<void> verifyOtp() async {
     final email = widget.email.trim();
     final otp = otpController.text.trim();
 
     if (otp.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Enter OTP")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Enter OTP")));
       return;
     }
 
@@ -89,7 +100,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse(baseUrl+"verify-otp"),
+        Uri.parse(baseUrl + "verify-otp"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email, "otp": otp}),
       );
@@ -99,83 +110,78 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
         sendtoservero();
       } else {
         setState(() => isLoading = false);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Invalid OTP")));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Invalid OTP")));
       }
     } catch (e) {
       setState(() => isLoading = false);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Error: $e")));
-    }
-  }
-  Future<void> sendtoservero() async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString("name", widget.name);
-  await prefs.setString("email", widget.email);
-  await prefs.setString("disability", widget.disability);
-  await prefs.setString("skills", widget.skills);
-  await prefs.setString("location", widget.location);
-  await prefs.setString("phone", widget.phone);
-  await prefs.setString("isloged", "yes");
-  await prefs.setString("role", "user");
-
-  try {
-    var uri = Uri.parse(baseUrl+"registerprofile");
-
-    var request = http.MultipartRequest("POST", uri);
-
-    // Add fields
-    request.fields['name'] = widget.name;
-    request.fields['email'] = widget.email;
-    request.fields['disability'] = widget.disability;
-    request.fields['skills'] = widget.skills;
-    request.fields['location'] = widget.location;
-    request.fields['phone'] = widget.phone;
-
-    // Add file (assuming widget.resumefile is a File object)
-    if (widget.resumeFile != null) {
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'resume', // <-- This should match backend field name
-          widget.resumeFile!.path,
-        ),
-      );
-    }
-
-    // Send request
-    var streamedResponse = await request.send();
-    var response = await http.Response.fromStream(streamedResponse);
-
-    print("Response status: ${response.statusCode}");
-    print("Response body: ${response.body}");
-
-    final resp = jsonDecode(response.body);
-
-    if (response.statusCode == 201) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Profile saved successfully")),
-      );
-      Navigator.pushReplacement(
+      ScaffoldMessenger.of(
         context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            resp["message"] ?? "Unknown error",
-          ),
-        ),
-      );
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error saving profile: $e")),
-    );
   }
-}
+
+  Future<void> sendtoservero() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("name", widget.name);
+    await prefs.setString("email", widget.email);
+    await prefs.setString("disability", widget.disability);
+    await prefs.setString("skills", widget.skills);
+    await prefs.setString("location", widget.location);
+    await prefs.setString("phone", widget.phone);
+    await prefs.setString("isloged", "yes");
+    await prefs.setString("role", "user");
+
+    try {
+      var uri = Uri.parse(baseUrl + "registerprofile");
+
+      var request = http.MultipartRequest("POST", uri);
+
+      // Add fields
+      request.fields['name'] = widget.name;
+      request.fields['email'] = widget.email;
+      request.fields['disability'] = widget.disability;
+      request.fields['skills'] = widget.skills;
+      request.fields['location'] = widget.location;
+      request.fields['phone'] = widget.phone;
+
+      // Add file (assuming widget.resumefile is a File object)
+      if (widget.resumeFile != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath('resume', widget.resumeFile!.path),
+        );
+      }
+
+      // Send request
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      print("Response status: ${response.statusCode}");
+      print("Response body: ${response.body}");
+
+      final resp = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Profile saved successfully")),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(resp["message"] ?? "Unknown error")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error saving profile: $e")));
+    }
+  }
+
   /// Timer for resend OTP
   void startCountdown() {
     countdown = 60;
@@ -206,14 +212,15 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
         labelText: label,
         labelStyle: TextStyle(color: Colors.grey[700]),
         floatingLabelStyle: TextStyle(color: borderColor),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: borderColor),
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 12,
+        ),
       );
     }
 
@@ -226,9 +233,13 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
             : Center(
                 child: SingleChildScrollView(
                   child: otpSent == false
-                      ? Text( "Sending OTP to ${widget.email}...",
+                      ? Text(
+                          "Sending OTP to ${widget.email}...",
                           style: TextStyle(
-                              fontSize: 16, color: Colors.grey[700]))
+                            fontSize: 16,
+                            color: Colors.grey[700],
+                          ),
+                        )
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
@@ -253,8 +264,10 @@ class _OTPLoginScreenState extends State<OTPLoginScreen> {
                                 ),
                                 minimumSize: const Size(180, 50),
                               ),
-                              child: const Text("Verify OTP",
-                                  style: TextStyle(color: Colors.white)),
+                              child: const Text(
+                                "Verify OTP",
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                             const SizedBox(height: 20),
                             countdown > 0
