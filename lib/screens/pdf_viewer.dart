@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
 class PdfViewPage extends StatefulWidget {
-  final String path; // can be local file path OR network URL
+  final String path;
 
   const PdfViewPage({Key? key, required this.path}) : super(key: key);
 
