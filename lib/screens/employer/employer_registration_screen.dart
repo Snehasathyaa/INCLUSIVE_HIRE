@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:hire_inclusive/screens/loginpage.dart';
 import 'package:hire_inclusive/screens/otp_login_screen_emp.dart';
 
-
 class EmployerRegistrationScreen extends StatefulWidget {
   final int type;
   const EmployerRegistrationScreen({super.key, required this.type});
@@ -24,60 +23,17 @@ class _EmployerRegistrationScreenState
 
   Future<void> saveEmployerProfile() async {
     if (!_formKey.currentState!.validate()) return;
-     Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) =>  OTPLoginScreenEmp(companyName: companyController.text, email: emailController.text, phone: phoneController.text, location: locationController.text)),
-        );
-//     final prefs = await SharedPreferences.getInstance();
-
-    
-//     try {
-//       final response = await http.post(
-//         Uri.parse("http://192.168.20.12:4000/api/users/empregistration"),
-//         headers: {
-//             "Content-Type": "application/json",  // 👈 JSON header
-// },
-//         body: 
-//     jsonEncode(
-//         {
-//           "company_name": companyController.text,
-//           "email": emailController.text,
-//           "phone": phoneController.text,
-//           "location": locationController.text,
-//         },
-//       )
-//       );
-
-//       final data = json.decode(response.body);
-
-//       if (data["success"].toString() == "1") {
-//         // ✅ Save to SharedPreferences
-//         await prefs.setString("employer_company", companyController.text);
-//         await prefs.setString("employer_email", emailController.text);
-//         await prefs.setString("employer_phone", phoneController.text);
-//         await prefs.setString("employer_location", locationController.text);
-//         await prefs.setString("role", "employer");
-
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(content: Text("✅ ${data["message"]}")),
-//         );
-
-//         // ✅ Navigate to Employer Home
-//         Navigator.pushReplacement(
-//           context,
-//           MaterialPageRoute(builder: (context) => const EmployerHomeScreen()),
-//         );
-//       } else {
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(content: Text("❌ ${data["message"]}")),
-
-//         );
-//       }
-//     } catch (e) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text("Error: $e")),
-//       );
-//     }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OTPLoginScreenEmp(
+          companyName: companyController.text,
+          email: emailController.text,
+          phone: phoneController.text,
+          location: locationController.text,
+        ),
+      ),
+    );
   }
 
   @override
@@ -91,9 +47,7 @@ class _EmployerRegistrationScreenState
           color: primaryColor,
           fontWeight: FontWeight.bold,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: primaryColor.withOpacity(0.5)),
           borderRadius: BorderRadius.circular(12),
@@ -139,15 +93,19 @@ class _EmployerRegistrationScreenState
                       TextFormField(
                         controller: companyController,
                         decoration: buildInputDecoration(
-                            "Company Name", Icons.business),
+                          "Company Name",
+                          Icons.business,
+                        ),
                         validator: (value) =>
                             value!.isEmpty ? "Enter company name" : null,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: phoneController,
-                        decoration:
-                            buildInputDecoration("Phone Number", Icons.phone),
+                        decoration: buildInputDecoration(
+                          "Phone Number",
+                          Icons.phone,
+                        ),
                         keyboardType: TextInputType.phone,
                         validator: (value) =>
                             value!.isEmpty ? "Enter phone number" : null,
@@ -155,15 +113,16 @@ class _EmployerRegistrationScreenState
                       const SizedBox(height: 16),
                       TextField(
                         controller: emailController,
-                        decoration:
-                            buildInputDecoration("Email", Icons.email),
+                        decoration: buildInputDecoration("Email", Icons.email),
                         keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: locationController,
-                        decoration:
-                            buildInputDecoration("Location", Icons.location_on),
+                        decoration: buildInputDecoration(
+                          "Location",
+                          Icons.location_on,
+                        ),
                         validator: (value) =>
                             value!.isEmpty ? "Enter location" : null,
                       ),
@@ -187,23 +146,25 @@ class _EmployerRegistrationScreenState
                         ),
                       ),
 
-
-                      
                       const SizedBox(height: 20),
-              InkWell(
-                onTap: () {
-                  // Navigate to login screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => loginpage(type:widget.type)),
-                  );
-                },
-                child: Text("Already a user ? login",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[600])),
-              )
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => loginpage(type: widget.type),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Already a user ? login",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
