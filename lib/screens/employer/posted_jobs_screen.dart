@@ -1,5 +1,3 @@
-// lib/screens/employer/posted_jobs_screen.dart
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -47,9 +45,7 @@ class _PostedJobsScreenState extends State<PostedJobsScreen> {
     setState(() => isLoading = true);
 
     try {
-      final uri = Uri.parse(baseUrl+
-        "getjobs/$employerId",
-      );
+      final uri = Uri.parse(baseUrl + "getjobs/$employerId");
 
       final response = await http.get(uri);
 
@@ -79,10 +75,7 @@ class _PostedJobsScreenState extends State<PostedJobsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "Jobs Posted",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text("Jobs Posted", style: TextStyle(color: Colors.white)),
         backgroundColor: themeColor,
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
@@ -93,93 +86,96 @@ class _PostedJobsScreenState extends State<PostedJobsScreen> {
         child: isLoading && jobs.isEmpty
             ? const Center(child: CircularProgressIndicator())
             : jobs.isEmpty
-                ? ListView(
-                    shrinkWrap: true,
-                    children: const [
-                      SizedBox(height: 200),
-                      Center(
-                        child: Text(
-                          "No jobs posted yet.",
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
+            ? ListView(
+                shrinkWrap: true,
+                children: const [
+                  SizedBox(height: 200),
+                  Center(
+                    child: Text(
+                      "No jobs posted yet.",
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                  ),
+                ],
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: jobs.length,
+                itemBuilder: (context, index) {
+                  final job = jobs[index];
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(16),
+                      title: Text(
+                        job["title"]?.toString() ?? "No Title",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: themeColor,
                         ),
                       ),
-                    ],
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: jobs.length,
-                    itemBuilder: (context, index) {
-                      final job = jobs[index];
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 8,
-                              offset: Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(16),
-                          title: Text(
-                            job["title"]?.toString() ?? "No Title",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: themeColor,
-                            ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 8),
+                          Text(
+                            job["description"]?.toString() ?? "",
+                            style: TextStyle(color: Colors.grey[800]),
                           ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          const SizedBox(height: 6),
+                          Row(
                             children: [
-                              const SizedBox(height: 8),
-                              Text(
-                                job["description"]?.toString() ?? "",
-                                style: TextStyle(color: Colors.grey[800]),
+                              Icon(
+                                Icons.location_on,
+                                color: themeColor,
+                                size: 18,
                               ),
-                              const SizedBox(height: 6),
-                              Row(
-                                children: [
-                                  Icon(Icons.location_on,
-                                      color: themeColor, size: 18),
-                                  const SizedBox(width: 4),
-                                  Text(job["location"]?.toString() ?? "Unknown"),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      final jobId = (job["_id"] ??
-                                              job["id"] ??
-                                              "")
-                                          .toString();
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              AppliedCandidatesScreen(
-                                                  jobId: jobId),
-                                        ),
-                                      );
-                                    },
-                                    child: const Icon(Icons.people,
-                                        color: Colors.grey, size: 20),
-                                  ),
-                                ],
+                              const SizedBox(width: 4),
+                              Text(job["location"]?.toString() ?? "Unknown"),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  final jobId = (job["_id"] ?? job["id"] ?? "")
+                                      .toString();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          AppliedCandidatesScreen(jobId: jobId),
+                                    ),
+                                  );
+                                },
+                                child: const Icon(
+                                  Icons.people,
+                                  color: Colors.grey,
+                                  size: 20,
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      );
-                    },
-                  ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
       ),
     );
   }
