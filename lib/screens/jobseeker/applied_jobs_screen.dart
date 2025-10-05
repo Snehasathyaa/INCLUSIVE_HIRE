@@ -1,4 +1,3 @@
-// import 'dart:convert';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -30,16 +29,16 @@ class _AppliedJobsScreenState extends State<AppliedJobsScreen> {
     final userEmail = prefs.getString("email") ?? "";
 
     if (userEmail.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("User email not found.")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("User email not found.")));
       setState(() => isLoading = false);
       return;
     }
 
     try {
       final response = await http.get(
-        Uri.parse(baseUrl+"applied/$userEmail"),
+        Uri.parse(baseUrl + "applied/$userEmail"),
       );
 
       final data = json.decode(response.body);
@@ -52,14 +51,16 @@ class _AppliedJobsScreenState extends State<AppliedJobsScreen> {
       } else {
         setState(() => isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data["message"] ?? "Failed to fetch applied jobs.")),
+          SnackBar(
+            content: Text(data["message"] ?? "Failed to fetch applied jobs."),
+          ),
         );
       }
     } catch (e) {
       setState(() => isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
     }
   }
 
@@ -69,52 +70,63 @@ class _AppliedJobsScreenState extends State<AppliedJobsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Applications", style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Applications",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: themeColor,
-        iconTheme: const IconThemeData(
-    color: Colors.white, // <-- change the back arrow color here
-  ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : appliedJobs.isEmpty
-              ? const Center(child: Text("No applied jobs found."))
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: appliedJobs.length,
-                  itemBuilder: (context, index) {
-                    final job = appliedJobs[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ListTile(
-                            title: Text(job["title"] ?? ""),
-                            subtitle: Text("${job["company_name"] ?? ""} • ${job["job_location"] ?? ""}"),
-                            //trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => JobDetailsScreen(job: job),
-                                ),
-                              );
-                            },
-                          ),
-                          if (job["description"] != null && job["description"].toString().isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
-                              child: Text(
-                                job["description"],
-                                style: TextStyle(color: Colors.grey[600], fontSize: 13),
-                              ),
+          ? const Center(child: Text("No applied jobs found."))
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: appliedJobs.length,
+              itemBuilder: (context, index) {
+                final job = appliedJobs[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        title: Text(job["title"] ?? ""),
+                        subtitle: Text(
+                          "${job["company_name"] ?? ""} • ${job["job_location"] ?? ""}",
+                        ),
+                        //trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => JobDetailsScreen(job: job),
                             ),
-                        ],
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
+                      if (job["description"] != null &&
+                          job["description"].toString().isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 16.0,
+                            right: 16.0,
+                            bottom: 8.0,
+                          ),
+                          child: Text(
+                            job["description"],
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
   }
 }
