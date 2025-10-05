@@ -8,8 +8,14 @@ import 'const.dart';
 import 'employer/employer_home_screen.dart';
 
 class OTPLoginScreenEmp extends StatefulWidget {
-  final String companyName, email, phone,  location;
-  const OTPLoginScreenEmp({super.key, required this.companyName, required this.email, required this.phone, required this.location});
+  final String companyName, email, phone, location;
+  const OTPLoginScreenEmp({
+    super.key,
+    required this.companyName,
+    required this.email,
+    required this.phone,
+    required this.location,
+  });
 
   @override
   _OTPLoginScreenState createState() => _OTPLoginScreenState();
@@ -29,7 +35,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreenEmp> {
     sendOtp();
   }
 
-  /// ✅ API: Send OTP
+  ///  Send OTP
   Future<void> sendOtp() async {
     final email = widget.email.trim();
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -45,7 +51,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreenEmp> {
 
     try {
       final response = await http.post(
-        Uri.parse(baseUrl+"send-otp"),
+        Uri.parse(baseUrl + "send-otp"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email}),
       );
@@ -56,29 +62,32 @@ class _OTPLoginScreenState extends State<OTPLoginScreenEmp> {
           isLoading = false;
           startCountdown();
         });
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("OTP sent to $email")));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("OTP sent to $email")));
       } else {
         setState(() => isLoading = false);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Failed to send OTP")));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Failed to send OTP")));
       }
     } catch (e) {
       setState(() => isLoading = false);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Error: $e")));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
     }
   }
 
-  /// ✅ API: Verify OTP
+  ///  Verify OTP
   Future<void> verifyOtp() async {
     final email = widget.email.trim();
     final otp = otpController.text.trim();
 
     if (otp.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Enter OTP")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Enter OTP")));
       return;
     }
 
@@ -86,7 +95,7 @@ class _OTPLoginScreenState extends State<OTPLoginScreenEmp> {
 
     try {
       final response = await http.post(
-        Uri.parse(baseUrl+"verify-otp"),
+        Uri.parse(baseUrl + "verify-otp"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email, "otp": otp}),
       );
@@ -96,40 +105,36 @@ class _OTPLoginScreenState extends State<OTPLoginScreenEmp> {
         sendtoservero();
       } else {
         setState(() => isLoading = false);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Invalid OTP")));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Invalid OTP")));
       }
     } catch (e) {
       setState(() => isLoading = false);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Error: $e")));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
     }
   }
-  Future<void> sendtoservero() async {
-     final prefs = await SharedPreferences.getInstance();
 
-    
+  Future<void> sendtoservero() async {
+    final prefs = await SharedPreferences.getInstance();
+
     try {
       final response = await http.post(
-        Uri.parse(baseUrl+"empregistration"),
-        headers: {
-            "Content-Type": "application/json",  // 👈 JSON header
-},
-        body: 
-    jsonEncode(
-        {
+        Uri.parse(baseUrl + "empregistration"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
           "company_name": widget.companyName,
           "email": widget.email,
           "phone": widget.phone,
           "location": widget.location,
-        },
-      )
+        }),
       );
 
       final data = json.decode(response.body);
 
       if (data["success"].toString() == "1") {
-        // ✅ Save to SharedPreferences
         await prefs.setString("employer_company", widget.companyName);
         await prefs.setString("employer_email", widget.email);
         await prefs.setString("employer_phone", widget.phone);
@@ -141,28 +146,23 @@ class _OTPLoginScreenState extends State<OTPLoginScreenEmp> {
           await prefs.setString("employer_id", data["employer_id"].toString());
         }
 
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(" ${data["message"]}")));
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(" ${data["message"]}")),
-        );
-
-        // ✅ Navigate to Employer Home
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const EmployerHomeScreen(
-            
-          )),
+          MaterialPageRoute(builder: (context) => const EmployerHomeScreen()),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(" ${data["message"]}")),
-
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(" ${data["message"]}")));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
     }
   }
 
@@ -196,14 +196,15 @@ class _OTPLoginScreenState extends State<OTPLoginScreenEmp> {
         labelText: label,
         labelStyle: TextStyle(color: Colors.grey[700]),
         floatingLabelStyle: TextStyle(color: borderColor),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: borderColor),
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 12,
+        ),
       );
     }
 
@@ -216,9 +217,13 @@ class _OTPLoginScreenState extends State<OTPLoginScreenEmp> {
             : Center(
                 child: SingleChildScrollView(
                   child: otpSent == false
-                      ? Text( "Sending OTP to ${widget.email}...",
+                      ? Text(
+                          "Sending OTP to ${widget.email}...",
                           style: TextStyle(
-                              fontSize: 16, color: Colors.grey[700]))
+                            fontSize: 16,
+                            color: Colors.grey[700],
+                          ),
+                        )
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
@@ -243,8 +248,10 @@ class _OTPLoginScreenState extends State<OTPLoginScreenEmp> {
                                 ),
                                 minimumSize: const Size(180, 50),
                               ),
-                              child: const Text("Verify OTP",
-                                  style: TextStyle(color: Colors.white)),
+                              child: const Text(
+                                "Verify OTP",
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                             const SizedBox(height: 20),
                             countdown > 0
