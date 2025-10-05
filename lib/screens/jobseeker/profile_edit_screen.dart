@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:hire_inclusive/screens/const.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:url_launcher/url_launcher.dart';
 
 import '../pdf_viewer.dart';
 
@@ -57,9 +56,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   Future<void> _fetchUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
     String email = prefs.getString("email") ?? "";
-    final url = Uri.parse(
-      baseUrl+"getprofile/$email",
-    );
+    final url = Uri.parse(baseUrl + "getprofile/$email");
 
     try {
       final response = await http.get(url);
@@ -112,79 +109,79 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     }
   }
 
- Future<void> updateProfile() async {
-  if (!_formKey.currentState!.validate()) return;
+  Future<void> updateProfile() async {
+    if (!_formKey.currentState!.validate()) return;
 
-  if (disabilityType.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Please select disability type")),
-    );
-    return;
-  }
-  setState(() {
-    upload =true;
-  });
-
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    String email = prefs.getString("email") ?? "";
-
-    var uri = Uri.parse(baseUrl+"updateprofile/$email");
-    var request = http.MultipartRequest("PUT", uri);
-
-    // Add form fields
-    request.fields['name'] = nameController.text;
-    request.fields['email'] = emailController.text;
-    request.fields['phone'] = phoneController.text;
-    request.fields['skills'] = skillsController.text;
-    request.fields['location'] = locationController.text;
-    request.fields['disability'] = disabilityType;
-
-    // Add resume file if user selected a new one
-if (resumePath != null && resumePath!.contains("/")) {
-  // contains "/" → it's a real local file path
-  request.files.add(await http.MultipartFile.fromPath("resume", resumePath!));
-}
-
-
-    var response = await request.send();
-    var responseBody = await http.Response.fromStream(response);
-
-    print("Update Status: ${responseBody.statusCode}");
-    print("Update Response: ${responseBody.body}");
-
-    if (responseBody.statusCode == 200) {
-      final resp = jsonDecode(responseBody.body);
+    if (disabilityType.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(resp["message"] ?? "Profile updated")),
+        const SnackBar(content: Text("Please select disability type")),
       );
-
-      // Save updated data locally
-      await prefs.setString("name", nameController.text);
-      await prefs.setString("phone", phoneController.text);
-      await prefs.setString("skills", skillsController.text);
-      await prefs.setString("location", locationController.text);
-      await prefs.setString("disability", disabilityType);
-      if (resp["data"]["resume"] != null) {
-        await prefs.setString("resume", resp["data"]["resume"]);
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Update failed: ${responseBody.body}")),
-      );
+      return;
     }
-  } catch (e) {
-    print("Error: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error updating profile: $e")),
-    );
-  }finally {
     setState(() {
-      upload = false;
+      upload = true;
     });
-  }
-}
 
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String email = prefs.getString("email") ?? "";
+
+      var uri = Uri.parse(baseUrl + "updateprofile/$email");
+      var request = http.MultipartRequest("PUT", uri);
+
+      // Add form fields
+      request.fields['name'] = nameController.text;
+      request.fields['email'] = emailController.text;
+      request.fields['phone'] = phoneController.text;
+      request.fields['skills'] = skillsController.text;
+      request.fields['location'] = locationController.text;
+      request.fields['disability'] = disabilityType;
+
+      // Add resume file if user selected a new one
+      if (resumePath != null && resumePath!.contains("/")) {
+        // contains "/" → it's a real local file path
+        request.files.add(
+          await http.MultipartFile.fromPath("resume", resumePath!),
+        );
+      }
+
+      var response = await request.send();
+      var responseBody = await http.Response.fromStream(response);
+
+      print("Update Status: ${responseBody.statusCode}");
+      print("Update Response: ${responseBody.body}");
+
+      if (responseBody.statusCode == 200) {
+        final resp = jsonDecode(responseBody.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(resp["message"] ?? "Profile updated")),
+        );
+
+        // Save updated data locally
+        await prefs.setString("name", nameController.text);
+        await prefs.setString("phone", phoneController.text);
+        await prefs.setString("skills", skillsController.text);
+        await prefs.setString("location", locationController.text);
+        await prefs.setString("disability", disabilityType);
+        if (resp["data"]["resume"] != null) {
+          await prefs.setString("resume", resp["data"]["resume"]);
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Update failed: ${responseBody.body}")),
+        );
+      }
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error updating profile: $e")));
+    } finally {
+      setState(() {
+        upload = false;
+      });
+    }
+  }
 
   InputDecoration buildInputDecoration(String label, IconData icon) {
     final themeColor = Colors.teal;
@@ -208,45 +205,37 @@ if (resumePath != null && resumePath!.contains("/")) {
   }
 
   String get resumeDisplayName {
-  if (resumePath == null) return "Upload Resume (PDF/DOC/DOCX)";
-  if (resumePath!.contains('/')) return resumePath!.split('/').last;
-  return resumePath!; // just filename from API
-}
-
-
-String get resumeUrl {
-  if (resumePath == null || resumePath!.isEmpty) return "";
-  if (resumePath!.startsWith("http")) return resumePath!;
-  // If it's just a filename from DB
-  if (!resumePath!.contains("/")) return fileUrl + resumePath!;
-  // Else it's a picked local file
-  return resumePath!;
-}
-
-
-
-Future<void> openResume() async {
-  if (resumePath == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("No resume uploaded")),
-    );
-    return;
+    if (resumePath == null) return "Upload Resume (PDF/DOC/DOCX)";
+    if (resumePath!.contains('/')) return resumePath!.split('/').last;
+    return resumePath!; // just filename from API
   }
 
-  // Determine actual path or URL
-  String path = resumeUrl;
+  String get resumeUrl {
+    if (resumePath == null || resumePath!.isEmpty) return "";
+    if (resumePath!.startsWith("http")) return resumePath!;
+    // If it's just a filename from DB
+    if (!resumePath!.contains("/")) return fileUrl + resumePath!;
+    // Else it's a picked local file
+    return resumePath!;
+  }
 
-  log("path-------"+path);
+  Future<void> openResume() async {
+    if (resumePath == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("No resume uploaded")));
+      return;
+    }
 
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => PdfViewPage(path: path),
-    ),
-  );
-}
+    // Determine actual path or URL
+    String path = resumeUrl;
 
 
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PdfViewPage(path: path)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -337,38 +326,43 @@ Future<void> openResume() async {
                           value!.isEmpty ? "Enter location" : null,
                     ),
                     const SizedBox(height: 16),
-                  InkWell(
-  onTap: pickResume,
-  child: Container(
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      border: Border.all(
-        color: Colors.teal.withOpacity(0.5),
-      ),
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Row(
-      children: [
-        const Icon(Icons.upload_file, color: Colors.teal),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            resumeDisplayName,
-            style: TextStyle(
-              color: resumePath != null ? Colors.black : Colors.grey[600],
-            ),
-          ),
-        ),
-        if (resumePath != null) ...[
-          IconButton(
-            icon: const Icon(Icons.remove_red_eye, color: Colors.teal),
-            onPressed: openResume,
-          ),
-        ],
-      ],
-    ),
-  ),
-),
+                    InkWell(
+                      onTap: pickResume,
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.teal.withOpacity(0.5),
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.upload_file, color: Colors.teal),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                resumeDisplayName,
+                                style: TextStyle(
+                                  color: resumePath != null
+                                      ? Colors.black
+                                      : Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                            if (resumePath != null) ...[
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.remove_red_eye,
+                                  color: Colors.teal,
+                                ),
+                                onPressed: openResume,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
 
                     const SizedBox(height: 24),
                     SizedBox(
@@ -382,10 +376,15 @@ Future<void> openResume() async {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: upload ? Center(child: const CircularProgressIndicator()) : Text(
-                          "Update Profile",
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                        ),
+                        child: upload
+                            ? Center(child: const CircularProgressIndicator())
+                            : Text(
+                                "Update Profile",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
                   ],
