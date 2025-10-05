@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:hire_inclusive/screens/employer/employer_home_screen.dart';
 import 'package:hire_inclusive/screens/home_screen.dart';
@@ -27,7 +26,7 @@ class _OTPLoginScreenState extends State<loginpage> {
   int countdown = 0;
   Timer? timer;
 
-  /// ✅ API: Send OTP
+  /// API: Send OTP
   Future<void> sendOtp() async {
     final email = emailController.text.trim();
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
@@ -42,13 +41,11 @@ class _OTPLoginScreenState extends State<loginpage> {
     setState(() => isLoading = true);
 
     try {
-      log("wwwwwwwwwwwwwwww");
       final response = await http.post(
         Uri.parse(baseUrl + "send-otp"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email}),
       );
-      log("respppp-" + response.body);
       if (response.statusCode == 200) {
         setState(() {
           otpSent = true;
@@ -93,7 +90,7 @@ class _OTPLoginScreenState extends State<loginpage> {
       );
 
       if (response.statusCode == 200) {
-        /// ✅ OTP verified → now check login in DB
+        ///  OTP verified → now check login in DB
         await loginWithType(email);
       } else {
         setState(() => isLoading = false);
@@ -124,7 +121,6 @@ class _OTPLoginScreenState extends State<loginpage> {
 
       setState(() => isLoading = false);
 
-      log("dddd----" + response.body);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
