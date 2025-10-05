@@ -9,10 +9,12 @@ class EmployerApplicationsScreen extends StatefulWidget {
   const EmployerApplicationsScreen({super.key});
 
   @override
-  State<EmployerApplicationsScreen> createState() => _EmployerApplicationsScreenState();
+  State<EmployerApplicationsScreen> createState() =>
+      _EmployerApplicationsScreenState();
 }
 
-class _EmployerApplicationsScreenState extends State<EmployerApplicationsScreen> {
+class _EmployerApplicationsScreenState
+    extends State<EmployerApplicationsScreen> {
   List applications = [];
   final Color themeColor = Colors.teal[700]!;
 
@@ -26,7 +28,9 @@ class _EmployerApplicationsScreenState extends State<EmployerApplicationsScreen>
     final prefs = await SharedPreferences.getInstance();
     int employerId = prefs.getInt("employer_id") ?? 1;
 
-    final response = await http.get(Uri.parse(baseUrl+"employerApplications/$employerId"));
+    final response = await http.get(
+      Uri.parse(baseUrl + "employerApplications/$employerId"),
+    );
     if (response.statusCode == 200) {
       setState(() {
         applications = json.decode(response.body);
@@ -37,8 +41,11 @@ class _EmployerApplicationsScreenState extends State<EmployerApplicationsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Job Applications"), backgroundColor: themeColor),
-      
+      appBar: AppBar(
+        title: Text("Job Applications"),
+        backgroundColor: themeColor,
+      ),
+
       body: applications.isEmpty
           ? Center(child: Text("No applications yet"))
           : ListView.builder(
@@ -48,8 +55,12 @@ class _EmployerApplicationsScreenState extends State<EmployerApplicationsScreen>
                 return Card(
                   margin: EdgeInsets.all(8),
                   child: ListTile(
-                    title: Text("${app["seeker_name"]} applied for ${app["title"]}"),
-                    subtitle: Text("Email: ${app["email"]}\nStatus: ${app["status"]}"),
+                    title: Text(
+                      "${app["seeker_name"]} applied for ${app["title"]}",
+                    ),
+                    subtitle: Text(
+                      "Email: ${app["email"]}\nStatus: ${app["status"]}",
+                    ),
                   ),
                 );
               },
