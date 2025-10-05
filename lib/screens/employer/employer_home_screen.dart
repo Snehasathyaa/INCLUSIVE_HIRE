@@ -49,8 +49,7 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
 
   /// Fetch employer details from backend
   Future<void> _fetchEmployerProfile(String emailParam) async {
-    final url = Uri.parse(baseUrl+
-        "get/email/$emailParam");
+    final url = Uri.parse(baseUrl + "get/email/$emailParam");
 
     print("Fetching employer profile from: $url");
 
@@ -103,7 +102,7 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
     }
 
     final response = await http.post(
-      Uri.parse(baseUrl+"createJob"),
+      Uri.parse(baseUrl + "createJob"),
       headers: {"Content-Type": "application/json"},
       body: json.encode({
         "employer_id": employerId,
@@ -114,16 +113,16 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
     );
 
     if (response.statusCode == 201) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Job posted successfully")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Job posted successfully")));
       titleController.clear();
       descriptionController.clear();
       locationController.clear();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Failed to post job")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Failed to post job")));
     }
   }
 
@@ -136,9 +135,7 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
           color: themeColor,
           fontWeight: FontWeight.bold,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: themeColor.withOpacity(0.5)),
           borderRadius: BorderRadius.circular(12),
@@ -147,8 +144,10 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
           borderSide: BorderSide(color: themeColor, width: 2),
           borderRadius: BorderRadius.circular(12),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 14,
+          horizontal: 12,
+        ),
       );
     }
 
@@ -217,18 +216,21 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
                             ),
                             elevation: 2,
                             padding: const EdgeInsets.symmetric(
-                                vertical: 14, horizontal: 24),
+                              vertical: 14,
+                              horizontal: 24,
+                            ),
                           ),
                           child: const Text(
                             "Post",
                             style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -245,7 +247,6 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
       appBar: AppBar(
         title: const Text("Dashboard"),
         backgroundColor: Colors.white,
-    
       ),
       drawer: Drawer(
         child: ListView(
@@ -268,30 +269,13 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const PostedJobsScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const PostedJobsScreen(),
+                  ),
                 );
               },
             ),
-            // ListTile(
-            //   leading: const Icon(Icons.people, color: Colors.teal),
-            //   title: const Text("Applied Candidates"),
-            //   onTap: () {
-            //     if (jobs.isNotEmpty) {
-            //       Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //           builder: (context) =>
-            //               AppliedCandidatesScreen(jobId: jobs[0]["id"].toString()),
-            //         ),
-            //       );
-            //     } else {
-            //       ScaffoldMessenger.of(context).showSnackBar(
-            //         const SnackBar(
-            //             content: Text("No jobs available to view applicants")),
-            //       );
-            //     }
-            //   },
-            // ),
+
             ListTile(
               leading: Icon(Icons.logout, color: themeColor),
               title: const Text("Logout"),
@@ -301,7 +285,8 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const RoleSelectionScreen()),
+                    builder: (context) => const RoleSelectionScreen(),
+                  ),
                 );
               },
             ),
@@ -313,43 +298,39 @@ class _EmployerHomeScreenState extends State<EmployerHomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-             // const SizedBox(height: 4), // small gap from AppBar
+              // const SizedBox(height: 4), // small gap from AppBar
               Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            children: [
-              // Welcome Text
-              Text(
-                "Welcome, $companyName  👋",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: themeColor,
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  children: [
+                    // Welcome Text
+                    Text(
+                      "Welcome, $companyName  👋",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: themeColor,
+                      ),
+                    ),
+                    const SizedBox(height: 35),
+                    Text(
+                      "“Great opportunities don’t happen. You create them.”",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    const SizedBox(height: 108),
+                    Text(
+                      "Post your first job using the button below!",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16, color: Colors.grey[400]),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 35), // reduced gap
-              // Motivational Quote
-              Text(
-                "“Great opportunities don’t happen. You create them.”",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.grey[700],
-                ),
-              ),
-              const SizedBox(height: 108),
-              Text(
-                "Post your first job using the button below!",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[400],
-                ),
-              ),
-            ],
-          ),
               ),
             ],
           ),
