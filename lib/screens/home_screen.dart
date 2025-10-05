@@ -17,8 +17,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-
   final Color themeColor = Colors.teal[700]!;
 
   List jobs = []; // store jobs from API
@@ -30,22 +28,22 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchJobs(); // load jobs when screen starts
   }
 
-String username="Loading..",email="Loading..";
- 
+  String username = "Loading..", email = "Loading..";
+
   // Fetch jobs from backend
   Future<void> fetchJobs() async {
     try {
-       final prefs = await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance();
 
-      final response = await http.get(Uri.parse(baseUrl+"getalljob"));
+      final response = await http.get(Uri.parse(baseUrl + "getalljob"));
 
       print("API Response: ${response.body}");
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
           jobs = data["data"];
-             email = prefs.getString("email") ?? "";
-    username = prefs.getString("name") ?? "User";
+          email = prefs.getString("email") ?? "";
+          username = prefs.getString("name") ?? "User";
         });
       } else {
         print("Failed to fetch jobs: ${response.statusCode}");
@@ -84,7 +82,7 @@ String username="Loading..",email="Loading..";
               leading: Icon(Icons.person, color: themeColor),
               title: const Text("Profile"),
               onTap: () {
-                 Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ProfileEditScreen()),
                 );
@@ -94,7 +92,7 @@ String username="Loading..",email="Loading..";
               leading: Icon(Icons.work, color: themeColor),
               title: const Text("Jobs"),
               onTap: () {
-                 Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AppliedJobsScreen()),
                 );
@@ -108,7 +106,9 @@ String username="Loading..",email="Loading..";
                 await prefs.clear(); // clear all stored values
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => RoleSelectionScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => RoleSelectionScreen(),
+                  ),
                 );
               },
             ),
@@ -164,7 +164,10 @@ String username="Loading..",email="Loading..";
                             ],
                           ),
                           child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
                             title: Text(
                               job["title"] ?? "",
                               style: TextStyle(
@@ -179,26 +182,34 @@ String username="Loading..",email="Loading..";
                                   "${job["company_name"] ?? ""} • ${job["job_location"] ?? ""}",
                                   style: TextStyle(color: Colors.grey[700]),
                                 ),
-                                if (job["description"] != null && job["description"].toString().isNotEmpty)
+                                if (job["description"] != null &&
+                                    job["description"].toString().isNotEmpty)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 4.0),
                                     child: Text(
                                       job["description"],
-                                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 13,
+                                      ),
                                     ),
                                   ),
                               ],
                             ),
-                            trailing: Icon(Icons.arrow_forward_ios, size: 16, color: themeColor),
+                            trailing: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                              color: themeColor,
+                            ),
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => JobDetailsScreen(job: job),
+                                  builder: (context) =>
+                                      JobDetailsScreen(job: job),
                                 ),
                               );
                             },
-
                           ),
                         );
                       },
