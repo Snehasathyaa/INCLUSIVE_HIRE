@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // Navigate to OTP Login Screen after 3 seconds
+    // Navigate to OTP Login Screen after 3 second
     Timer(Duration(seconds: 3), () {
       checklogin();
     });
