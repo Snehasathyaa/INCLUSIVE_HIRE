@@ -31,14 +31,16 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
       if (userEmail.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("User email not found. Please login again.")),
+          const SnackBar(
+            content: Text("User email not found. Please login again."),
+          ),
         );
         setState(() => isApplying = false);
         return;
       }
 
       final response = await http.post(
-        Uri.parse(baseUrl+"apply"), // backend API
+        Uri.parse(baseUrl + "apply"), // backend API
         headers: {"Content-Type": "application/json"},
         body: json.encode({
           "user_email": userEmail,
@@ -49,9 +51,9 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
       final data = json.decode(response.body);
 
       if (response.statusCode == 200 && data["success"] == 1) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Applied successfully!")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Applied successfully!")));
         setState(() {
           applied = true;
         });
@@ -61,9 +63,9 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
     } finally {
       setState(() {
         isApplying = false;
@@ -81,9 +83,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: themeColor,
-        iconTheme: const IconThemeData(
-    color: Colors.white, // <-- change the back arrow color here
-  ),
+        iconTheme: const IconThemeData(color: Colors.white),
         elevation: 2,
       ),
       body: SingleChildScrollView(
@@ -91,7 +91,6 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Job Card
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -102,9 +101,10 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.grey.withOpacity(0.4),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6))
+                    color: Colors.grey.withOpacity(0.4),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
                 ],
               ),
               padding: const EdgeInsets.all(20),
@@ -114,9 +114,10 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   Text(
                     widget.job["title"] ?? "",
                     style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: themeColor),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: themeColor,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -125,18 +126,28 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       const SizedBox(width: 6),
                       Text(
                         widget.job["company_name"] ?? "",
-                        style: const TextStyle(fontSize: 16, color: Colors.grey),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.location_on, size: 20, color: Colors.grey),
+                      const Icon(
+                        Icons.location_on,
+                        size: 20,
+                        color: Colors.grey,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         widget.job["job_location"] ?? "",
-                        style: const TextStyle(fontSize: 16, color: Colors.grey),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   ),
@@ -144,18 +155,20 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
               ),
             ),
             const SizedBox(height: 25),
-            // Job Description Card
+
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        blurRadius: 10,
-                        offset: const Offset(0, 6))
-                  ]),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -166,9 +179,10 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       Text(
                         "Job Description",
                         style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: themeColor),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: themeColor,
+                        ),
                       ),
                     ],
                   ),
@@ -186,7 +200,6 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
         ),
       ),
 
-      // Floating Apply Button
       floatingActionButton: FloatingActionButton.extended(
         onPressed: (applied || isApplying) ? null : () => applyForJob(),
         backgroundColor: applied ? Colors.grey : themeColor,
