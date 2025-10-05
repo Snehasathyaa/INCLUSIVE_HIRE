@@ -21,14 +21,17 @@ class _PostJobScreenState extends State<PostJobScreen> {
   Future<void> _postJob() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final url = Uri.parse(baseUrl+"postjob");
+    final url = Uri.parse(baseUrl + "postjob");
 
     try {
-      final response = await http.post(url, body: {
-        "title": titleController.text,
-        "description": descriptionController.text,
-        "location": locationController.text,
-      });
+      final response = await http.post(
+        url,
+        body: {
+          "title": titleController.text,
+          "description": descriptionController.text,
+          "location": locationController.text,
+        },
+      );
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -41,9 +44,9 @@ class _PostJobScreenState extends State<PostJobScreen> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Error posting job")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Error posting job")));
     }
   }
 
@@ -53,9 +56,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
       appBar: AppBar(
         title: const Text("Post a Job"),
         backgroundColor: themeColor,
-        iconTheme: const IconThemeData(
-    color: Colors.white, // <-- change the back arrow color here
-  ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -88,7 +89,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
                   backgroundColor: themeColor,
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                child: const Text("Post Job", style: TextStyle(color: Colors.white)),
+                child: const Text(
+                  "Post Job",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
