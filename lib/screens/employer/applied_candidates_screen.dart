@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hire_inclusive/screens/const.dart';
@@ -34,7 +33,6 @@ class _AppliedCandidatesScreenState extends State<AppliedCandidatesScreen> {
         baseUrl + "getApplicants/${int.tryParse(widget.jobId)}",
       );
       final response = await http.get(uri);
-
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
@@ -81,7 +79,7 @@ class _AppliedCandidatesScreenState extends State<AppliedCandidatesScreen> {
                     trailing: IconButton(
                       icon: const Icon(Icons.description, color: Colors.grey),
                       onPressed: () {
-                        String path = fileUrl + candidate["resume"] ;
+                        String path = fileUrl + candidate["resume"];
                         Navigator.push(
                           context,
                           MaterialPageRoute(
