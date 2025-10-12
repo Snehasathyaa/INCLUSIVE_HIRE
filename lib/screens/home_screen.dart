@@ -18,23 +18,28 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final Color themeColor = Colors.teal[700]!;
+  List jobs = [];
+  List filteredJobs = []; // filtered list for search
 
-  List jobs = []; // store jobs from API
+  String username = "Loading..", email = "Loading..";
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-
-    fetchJobs(); // load jobs when screen starts
+    fetchJobs();
   }
 
-  String username = "Loading..", email = "Loading..";
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   // Fetch jobs from backend
   Future<void> fetchJobs() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-
       final response = await http.get(Uri.parse(baseUrl + "getalljob"));
 
       print("API Response: ${response.body}");
@@ -42,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
         final data = json.decode(response.body);
         setState(() {
           jobs = data["data"];
+          filteredJobs = jobs; // initialize filteredJobs
           email = prefs.getString("email") ?? "";
           username = prefs.getString("name") ?? "User";
         });
@@ -53,8 +59,27 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Filter jobs by search query
+  void filterJobs(String query) {
+    final lowerQuery = query.toLowerCase();
+    setState(() {
+      filteredJobs = jobs.where((job) {
+        final title = (job["title"] ?? "").toLowerCase();
+        final location = (job["job_location"] ?? "").toLowerCase();
+        return title.contains(lowerQuery) || location.contains(lowerQuery);
+      }).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    int maxLength = screenWidth < 400
+        ? 80
+        : screenWidth < 600
+            ? 120
+            : 160;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F2F5),
       appBar: AppBar(
@@ -103,8 +128,8 @@ class _HomeScreenState extends State<HomeScreen> {
               title: const Text("Logout"),
               onTap: () async {
                 final prefs = await SharedPreferences.getInstance();
-                await prefs.clear(); // clear all stored values
-                Navigator.push(
+                await prefs.clear();
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => RoleSelectionScreen(),
@@ -128,7 +153,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: themeColor,
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
+            // Search bar
+            TextField(
+              controller: searchController,
+              onChanged: filterJobs,
+              decoration: InputDecoration(
+                hintText: "Search by title or location",
+                prefixIcon: Icon(Icons.search, color: themeColor),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             Text(
               "Job Listings",
               style: TextStyle(
@@ -137,9 +180,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: themeColor,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             Expanded(
-              child: jobs.isEmpty
+              child: filteredJobs.isEmpty
                   ? const Center(
                       child: Text(
                         "No jobs available right now.",
@@ -147,9 +190,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
                   : ListView.builder(
-                      itemCount: jobs.length,
+                      itemCount: filteredJobs.length,
                       itemBuilder: (context, index) {
-                        final job = jobs[index];
+                        final job = filteredJobs[index];
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           decoration: BoxDecoration(
@@ -187,7 +230,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Padding(
                                     padding: const EdgeInsets.only(top: 4.0),
                                     child: Text(
-                                      job["description"],
+                                      job["description"].length > maxLength
+                                          ? "${job["description"].substring(0, maxLength)}..."
+                                          : job["description"],
                                       style: TextStyle(
                                         color: Colors.grey[600],
                                         fontSize: 13,

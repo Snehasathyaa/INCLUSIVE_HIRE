@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "289464579611",
+    "project_id": "hire-inclusive",
+    "storage_bucket": "hire-inclusive.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:289464579611:android:e15df189b5f5bde296eabe",
+        "android_client_info": {
+          "package_name": "com.example.hire_inclusive"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpAno1_VwV5fD-67nIItEnBAac2KjLdBw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
